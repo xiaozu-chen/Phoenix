@@ -1,5 +1,1 @@
 venv
-.env
-__pycache__
-data
-bin/llama

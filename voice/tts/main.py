@@ -191,7 +191,11 @@ def _run_generate(model, text: str, **kwargs):
         # rather than permanently converting the model like .half()
         # would. Safer, but still a real quality tradeoff -- see
         # TTSConfig.amp's comment.
+<<<<<<< HEAD
         with torch.autocast(device_type="cuda", dtype=torch.int8):
+=======
+        with torch.autocast(device_type="cuda", dtype=torch.float16):
+>>>>>>> c46c4fc4c354acc81047dbfe31c9164dfbc20f93
             result = model.generate(text, **kwargs)
     else:
         result = model.generate(text, **kwargs)
