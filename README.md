@@ -286,5 +286,16 @@ to a temporary directory on every launch.
 
 ## License
 
-No license file is currently included in this repository. Add or document a
-project license before distributing Phoenix outside the project.
+Phoenix is licensed under the [MIT License](LICENSE).
+
+This repository also includes or depends on third-party software. The relevant
+license texts are preserved in [`licenses/`](licenses/):
+
+- [`FASTER-WHISPER-LICENSE`](licenses/FASTER-WHISPER-LICENSE) — the
+  `faster-whisper` speech-to-text implementation by SYSTRAN
+- [`CHATTERBOX-LICENSE`](licenses/CHATTERBOX-LICENSE) — the ChatterBox
+  text-to-speech implementation by Resemble AI
+
+Third-party dependencies may have additional licenses and notices. Review
+their package metadata and source distributions when creating a redistributable
+build.
