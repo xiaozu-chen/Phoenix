@@ -1,0 +1,129 @@
+# -*- mode: python ; coding: utf-8 -*-
+
+import os
+
+from PyInstaller.utils.hooks import collect_submodules, collect_data_files
+
+# Matches TTSConfig.variant in settings/config.py -- set CHATTERBOX_VARIANT
+# before running pyinstaller if you're bundling the nano checkpoint instead
+# of turbo (they live in separate folders since they're separate HF repos).
+_chatterbox_variant = os.environ.get("CHATTERBOX_VARIANT", "turbo").strip().lower()
+
+datas = [
+    (".env", "."),
+    ("app.ico", "."),
+    # Built React app -- copy `npm run build`'s dist/ contents into
+    # backend/static/ BEFORE running PyInstaller, or this path won't
+    # exist and the spec will fail here. main.py mounts this at "/"
+    # via StaticFiles, looking it up as sys._MEIPASS / "static" when
+    # frozen.
+    ("static", "static"),
+    ("bin/llama", "bin/llama"),
+    # ChatterBox is vendored under voice/tts/chatterbox (see voice/tts/main.py
+    # for why it's loaded as a fake top-level "chatterbox" module rather than
+    # a normal `voice.tts.chatterbox` import). PyInstaller's static analysis
+    # can't see that dynamic import, so the source has to be bundled as raw
+    # data files here, same as the old MeloTTS setup did.
+    ("voice/tts/chatterbox", "chatterbox"),
+    ("voice/stt/faster_whisper/assets", "voice/stt/faster_whisper/assets"),
+]
+
+hiddenimports = [
+    "uvicorn.logging",
+    "uvicorn.loops",
+    "uvicorn.loops.auto",
+    "uvicorn.protocols",
+    "uvicorn.protocols.http",
+    "uvicorn.protocols.http.auto",
+    "uvicorn.protocols.websockets",
+    "uvicorn.protocols.websockets.auto",
+    "uvicorn.lifespan",
+    "uvicorn.lifespan.on",
+    "multipart",
+    "python_multipart",
+    "orjson",
+    "loguru",
+    # ui/tray.py -- pystray resolves its backend module (win32/appindicator/
+    # gtk/xorg/darwin) dynamically based on platform rather than a plain
+    # `import`, so PyInstaller's static analysis won't find it on its own.
+    "pystray",
+    "pystray._win32",
+    "PIL",
+    "PIL.Image",
+    
+]
+
+# transformers (and tokenizers) resolve names like AutoTokenizer through a
+# custom lazy-import __getattr__ rather than plain `import` statements, so
+# PyInstaller's static analysis can't discover which submodules are needed.
+# Force-collecting everything avoids ImportErrors for names that only
+# resolve at runtime. tokenizers ships a compiled Rust extension that
+# transformers' backend-availability check depends on -- if it's missing,
+# transformers silently skips registering AutoTokenizer instead of raising
+# a clear "tokenizers not found" error, which is what produced the
+# confusing "cannot import name 'AutoTokenizer'" error.
+hiddenimports += collect_submodules("transformers")
+hiddenimports += collect_submodules("tokenizers")
+hiddenimports += collect_submodules("huggingface_hub")
+datas += collect_data_files("transformers")
+datas += collect_data_files("tokenizers")
+
+# g2p_en ships a data file (checkpoint20.npz) inside its own package
+# folder that it loads relative to its own location at runtime.
+# collect_submodules only grabs .py files, not arbitrary data files,
+# so this needs its own explicit collection.
+datas += collect_data_files("g2p_en")
+
+
+a = Analysis(
+    ["phoenix.py"],
+    pathex=["voice/tts"],
+    binaries=[],
+    datas=datas,
+    hiddenimports=hiddenimports,
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=["runtime_hook_typeguard.py"],
+    excludes=[
+        "gradio",
+        "gradio_client",
+        "torchvision",
+    ],
+    noarchive=False,
+    optimize=0,
+)
+pyz = PYZ(a.pure)
+
+# onedir build: EXE only holds the launcher + pure-python code (pyz).
+# exclude_binaries=True keeps a.binaries/a.datas OUT of the exe itself;
+# COLLECT below places them as loose files next to it in dist/backend/.
+# This avoids the onefile behavior of re-extracting ~2GB to a temp dir
+# on every single launch.
+exe = EXE(
+    pyz,
+    a.scripts,
+    [],
+    exclude_binaries=True,
+    name="PhoenixSvc",
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    console=False,
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+    icon=["app.ico"],
+)
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name="PhoenixSvc",
+)

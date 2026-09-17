@@ -55,7 +55,7 @@ def _base_dir() -> Path:
     else:
         root = os.environ.get("XDG_DATA_HOME") or Path.home() / ".local" / "share"
 
-    base = Path(root) / "Kayla"
+    base = Path(root) / "Phoenix"
     base.mkdir(parents=True, exist_ok=True)
     return base
 
@@ -71,7 +71,7 @@ def _p(relative: str) -> str:
 @dataclass
 class Config:
     llama_url: str                  = "http://127.0.0.1:8080"
-    db_path: str                    = _p("data/database/kayla.db")
+    db_path: str                    = _p("data/database/phoenix.db")
     data_path: str                  = _p("data/misc/data.jsonl")
     context_window: int             = 12
     memory_topk: int                = 5
@@ -121,7 +121,7 @@ class LLMConfig:
 class STTConfig:
     model_size: str                 = "small"
     device: str                     = "cuda"
-    compute_type: str               = "int8"
+    compute_type: str               = "float16"
     model_dir: str                  = os.environ.get("STT_MODEL_DIR", "")
     language: str                   = "en"
     tmp_dir: str                    = _p("data/misc/voice_tmp")

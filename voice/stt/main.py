@@ -75,6 +75,15 @@ def transcribe_file(path: str, language: str | None = None) -> dict:
         path,
         language=language or STTConfig.language,
         vad_filter=True,
+        vad_parameters=dict(
+            min_silence_duration_ms=500,  # merge short pauses instead of cutting mid-sentence
+            speech_pad_ms=200,            # keep a little padding so words at edges aren't clipped
+        ),
+        condition_on_previous_text=False,   # stops hallucination loops from compounding across segments
+        no_speech_threshold=0.6,
+        log_prob_threshold=-1.0,
+        compression_ratio_threshold=2.4,    # flags/filters repetitive garbage text
+        temperature=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0],  # fallback ladder: retries at higher temp only if low-confidence
     )
 
     seg_list = []

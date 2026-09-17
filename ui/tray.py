@@ -41,7 +41,7 @@ LOG_REFRESH_MS = 2000
 LOG_TAIL_LINES = 500
 MEMORY_ROW_LIMIT = 500
 _ICON_PATH = Path(__file__).resolve().parent.parent / "app.ico"
-_LOG_DIR = Path(os.environ.get("LOCALAPPDATA", "")) / "Kayla" / "data" / "logs"
+_LOG_DIR = Path(os.environ.get("LOCALAPPDATA", "")) / "Phoenix" / "data" / "logs"
 _LOG_FILES = {
     "System": _LOG_DIR / "system.log",
     "Session": _LOG_DIR / "session.log",
@@ -151,7 +151,7 @@ class LogWindow:
         self._after_id = None
 
         self.win = tk.Toplevel(parent)
-        self.win.title("Kayla Backend — Logs")
+        self.win.title("Phoenix Backend — Logs")
         self.win.geometry("640x420")
         self.win.configure(bg=_BG)
         self.win.protocol("WM_DELETE_WINDOW", self._close)
@@ -317,7 +317,7 @@ class ConfigWindow:
         self._ext_rows_by_iid: dict[str, dict] = {}
 
         self.win = tk.Toplevel(parent)
-        self.win.title("Kayla Backend — Configuration")
+        self.win.title("Phoenix Backend — Configuration")
         self.win.geometry("680x520")
         self.win.configure(bg=_BG)
         self.win.protocol("WM_DELETE_WINDOW", self._close)
@@ -868,14 +868,14 @@ class ConfigWindow:
 
 class MemoryWindow:
     """Toplevel window that browses the memory database (the `messages`
-    table Kayla's chat history + recall embeddings live in) read-only."""
+    table Phoenix's chat history + recall embeddings live in) read-only."""
 
     def __init__(self, parent: tk.Tk):
         self._parent = parent
         self._closing = False
 
         self.win = tk.Toplevel(parent)
-        self.win.title("Kayla Backend — Memory")
+        self.win.title("Phoenix Backend — Memory")
         self.win.geometry("760x480")
         self.win.configure(bg=_BG)
         self.win.protocol("WM_DELETE_WINDOW", self._close)
@@ -1073,7 +1073,7 @@ class TrayApp:
         self._memory_window: "MemoryWindow | None" = None
 
         self.root = tk.Tk()
-        self.root.title("Kayla Backend")
+        self.root.title("Phoenix Backend")
         self.root.geometry("340x220")
         self.root.resizable(False, False)
         self.root.configure(bg=_BG)
@@ -1193,7 +1193,7 @@ class TrayApp:
             pystray.MenuItem("Show window", self._show_window, default=True),
             pystray.MenuItem("Exit", self._request_exit),
         )
-        return pystray.Icon("kayla-backend", image, "Kayla Backend", menu)
+        return pystray.Icon("phoenix-backend", image, "Phoenix Backend", menu)
 
     def _show_window(self, icon=None, item=None):
         self.root.after(0, self._show_window_on_main_thread)
@@ -1275,7 +1275,7 @@ class TrayApp:
             tag_lbl.config(text=tag, fg=color)
             name_lbl.config(text=label_text)
 
-        self.icon.title = f"Kayla Backend — {headline}"
+        self.icon.title = f"Phoenix Backend — {headline}"
         self.root.after(REFRESH_MS, self._refresh)
 
     def run(self):

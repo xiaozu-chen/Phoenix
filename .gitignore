@@ -3,3 +3,9 @@ __pycache__
 bin
 data
 .env
+dist
+build
+models
+chatterbox-nano
+chatterbox-turbo
+models/chatterbox-nano

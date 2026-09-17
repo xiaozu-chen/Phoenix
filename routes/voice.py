@@ -200,7 +200,7 @@ async def interrupt(inp: InterruptIn):
     threshold during playback of a speech_id from /voice/tts -- not
     after STT finishes transcribing what the person said. Waiting on STT
     means waiting out silence-detection + the whole transcription
-    round-trip before Kayla even stops talking, which isn't really an
+    round-trip before Phoenix even stops talking, which isn't really an
     interruption anymore by the time it lands. VAD firing mid-utterance
     is what makes this feel like an actual barge-in.
 

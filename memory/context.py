@@ -3,7 +3,7 @@ memory/context.py
 
 Ephemeral, per-turn context that gets folded into what the LLM sees, but
 never written to the `messages` table -- if it's not meant to live in
-Kayla's long-term memory, it belongs here, not in chat.py.
+Phoenix's long-term memory, it belongs here, not in chat.py.
 
 Two things live here:
 

@@ -43,7 +43,7 @@ _DIM = "#565f89"
 _ICON_PATH = Path(__file__).resolve().parent.parent / "app.ico"
 
 _INTRO = (
-    "First time running Kayla -- two quick things before the tray "
+    "First time running Phoenix -- two quick things before the tray "
     "starts up. Everything here can be changed later from the tray's "
     "Configuration window, so don't overthink it."
 )
@@ -55,7 +55,7 @@ def run_setup_wizard() -> None:
     current = load_user_settings()
 
     root = tk.Tk()
-    root.title("Kayla — First-time Setup")
+    root.title("Phoenix — First-time Setup")
     root.geometry("560x600")
     root.minsize(520, 480)
     root.configure(bg=_BG)
